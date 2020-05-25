@@ -1,0 +1,16 @@
+#migbox h2 {font-size:14px;font-family:dotum;font-weight:bold;border-bottom:#dfdfdf solid 1px;padding:10px 0 10px 0;margin:0;letter-spacing:-1px;}
+#migbox .notice {padding:20px 0 20px 15px;margin:0 0 20px 0;font-size:12px;font-family:dotum;color:#02B6D6;border-bottom:#dfdfdf dotted 1px;line-height:150%;}
+#migbox .msg {font-weight:bold;}
+#migbox .msg img {position:relative;top:2px;}
+#migbox .msg .rednotice {color:#ff0000;}
+#migbox ul {padding:20px 0 20px 10px;margin:0;}
+#migbox li {list-style-type:none;padding:4px 0 4px 0;}
+#migbox table {padding:0;margin:20px 0 20px 10px;}
+#migbox .td1 {vertical-align:top;padding:12px 0 7px 15px;width:110px;}
+#migbox .td2 {padding:7px 0 7px 0;color:#999;}
+#migbox .td2 .select1 {width:400px;padding:2px 2px 2px 0;margin:1px;}
+#migbox .td2 .input {width:395px;}
+#migbox .td2 .file {width:400px;height:22px;margin:1px;}
+#migbox .sfont {font-size:12px;font-family:dotum;color:#999999;padding:15px 0 17px 0;line-height:150%;}
+#migbox .sfont .notice1 {color:#0000ff;}
+#migbox .submitbox {margin:20px 0 20px 0;padding:15px 0 0 15px;border-top:#dfdfdf solid 1px;}
