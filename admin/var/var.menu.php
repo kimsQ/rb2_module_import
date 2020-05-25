@@ -1,4 +1,4 @@
 <?php
-$d['amenu']['_info'] = '모듈정보';
-$d['amenu']['main'] = '마이그레이션';
+$d['amenu']['main'] = '변환하기';
+$d['amenu']['_info'] = '정보';
 ?>
