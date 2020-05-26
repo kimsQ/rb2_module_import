@@ -1,98 +1,27 @@
+<?php
+$license_local = $g['path_module'].$module.'/LICENSE';
+$license_global = $g['path_root'].'LICENSE';
 
+if (file_exists($license_local)) $license = $license_local;
+else  $license = $license_global;
+?>
 
-<div id="infobox" class="p-3">
+<link href="<?php echo $g['s']?>/_core/css/github-markdown.css" rel="stylesheet">
+<?php getImport('jquery-markdown','jquery.markdown','0.0.10','js')?>
 
-	<h2>모듈 기본정보</h2>
-	<table>
-		<colgroup>
-			<col width="150px">
-			<col width="20px">
-			<col>
-		</colgroup>
-	<tr>
-		<td class="td1">모듈명</td>
-		<td>:</td>
-		<td class="td2"><?php echo $MD['name']?></td>
-	</tr>
-	<tr>
-		<td class="td1">모듈아이디</td>
-		<td>:</td>
-		<td class="td2"><?php echo $MD['id']?></td>
-	</tr>
-	<tr>
-		<td class="td1">모듈의위치</td>
-		<td>:</td>
-		<td class="td2"><?php echo $g['path_module'].$module?>/</td>
-	</tr>
-	<tr>
-		<td class="td1">테이블생성</td>
-		<td>:</td>
-		<td class="td2">
-			<?php if($MD['tblnum']):?>
-			<?php echo $MD['tblnum']?>개
-			<?php else:?>
-			없음
-			<?php endif?>
-		</td>
-	</tr>
-	<tr>
-		<td class="td1">모듈등록일</td>
-		<td>:</td>
-		<td class="td2">
-			<?php echo getDateFormat($MD['d_regis'],'Y/m/d')?>
-		</td>
-	</tr>
-	<tr>
-		<td class="td1">버젼</td>
-		<td>:</td>
-		<td class="td2">
-			1.0
-		</td>
-	</tr>
-	<tr>
-		<td class="td1">최근업데이트</td>
-		<td>:</td>
-		<td class="td2">
-			2010.11.01
-		</td>
-	</tr>
-	</table>
+<?php @include $g['path_module'].$module.'/var/var.moduleinfo.php' ?>
 
+<article class="rb-docs markdown-body px-5 pt-3">
+	<h1><?php echo sprintf('%s 모듈정보',ucfirst($MD['name']))?></h1>
 
+	<div class="pb-5 readme"><?php readfile($g['path_module'].$module.'/README.md')?></div>
 
-	<h2>제작사 정보</h2>
-	<table>
-		<colgroup>
-			<col width="150px">
-			<col width="20px">
-			<col>
-		</colgroup>
-	<tr>
-		<td class="td1">제작사</td>
-		<td>:</td>
-		<td class="td2">(주)레드블럭</td>
-	</tr>
-	<tr>
-		<td class="td1">이메일</td>
-		<td>:</td>
-		<td class="td2"><a href="mailto:break@redblock.co.kr">break@redblock.co.kr</a></td>
-	</tr>
-	<tr>
-		<td class="td1">홈페이지</td>
-		<td>:</td>
-		<td class="td2">
-			<a href="http://kimsq.com" target="_blank">kimsq.com</a>
-		</td>
-	</tr>
-	<tr>
-		<td class="td1">라이센스</td>
-		<td>:</td>
-		<td class="td2">
-			RBL
-		</td>
-	</tr>
-	</table>
+	<div class="pb-5">
+		<h2>라이센스</h2>
+		<textarea class="form-control" rows="10"><?php readfile($license)?></textarea>
+	</div>
+</article>
 
-
-
-</div>
+<script type="text/javascript">
+	$(".markdown-body .readme").markdown();
+</script>
