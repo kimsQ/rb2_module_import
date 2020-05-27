@@ -203,7 +203,6 @@ if ($migtype == 'board') {
 		$d_regis	= getRssAddslashes($RSS['array'][$i],'d_regis');
 		$d_modify	= getRssAddslashes($RSS['array'][$i],'d_modify');
 		$d_comment	= getRssAddslashes($RSS['array'][$i],'d_comment');
-		$d_trackback= getRssAddslashes($RSS['array'][$i],'d_trackback');
 		$upload		= getRssAddslashes($RSS['array'][$i],'upload');
 		$ip			= getRssAddslashes($RSS['array'][$i],'ip');
 		$agent		= getRssAddslashes($RSS['array'][$i],'agent');
@@ -433,7 +432,8 @@ if ($migtype == 'post') {
 		$gid		= $mingid ? $mingid-1 : 100000000.00;
 		$hidden	= getRssAddslashes($RSS['array'][$i],'hidden');
 		$display = $hidden==1?1:5;  //공개
-	  $mbruid	= getRssAddslashes($RSS['array'][$i],'mbruid');
+		$id		= getRssAddslashes($RSS['array'][$i],'id');
+	  $mbruid		= getMbrUid($id);
 		$cid = $cid + $i;
 	  $subject	= preg_replace("/\r\n|\r|\n/", "", getRssAddslashes($RSS['array'][$i],'subject'));
 	  $content	= preg_replace("/\r\n|\r|\n/", "", getRssAddslashes($RSS['array'][$i],'content'));
@@ -464,7 +464,7 @@ if ($migtype == 'post') {
 
 		if ($upload) {
 			$up_fserver = 0;
-			$up_url = $g['url_root'];
+			$up_url = '';
 			$up_caption	= $subject;
 			$upfiles = explode('|',$upload);
 
@@ -478,8 +478,8 @@ if ($migtype == 'post') {
 				$up_height	= $valexp[4];
 				$up_down	= $valexp[5];
 				$up_date	= $valexp[6];
-				$up_folder	= $valexp[7];
-				$up_src	= '/'.$up_folder;
+				$up_folder	= 'files/'.$valexp[7];
+				$up_src	= '/'.$up_folder.'/'.$up_tmpname;
 				$up_fileExt	= strtolower(getExt($up_name));
 				$up_fileExt	= $up_fileExt == 'jpeg' ? 'jpg' : $up_fileExt;
 				$up_type	= getFileType($up_fileExt);
@@ -551,8 +551,8 @@ if ($migtype == 'post') {
 				$c_notice	= getRssAddslashes($comment_array[$j],'c_notice');
 				$c_name		= getRssAddslashes($comment_array[$j],'c_name');
 				$c_nic		= getRssAddslashes($comment_array[$j],'c_nic');
-				$c_mbrid	= getRssAddslashes($comment_array[$j],'c_mbrid');
-				$c_mbruid	= getMbrUid($c_mbrid);
+				$c_id	= getRssAddslashes($comment_array[$j],'c_id');
+				$c_mbruid	= getMbrUid($c_id);
 				$c_pw		= getRssAddslashes($comment_array[$j],'c_pw');
 				$c_subject	= getRssAddslashes($comment_array[$j],'c_subject');
 				$c_content	= getRssAddslashes($comment_array[$j],'c_content');
@@ -575,7 +575,7 @@ if ($migtype == 'post') {
 
 				$QKEY = "uid,site,parent,parentmbr,display,hidden,notice,name,nic,mbruid,id,pw,subject,content,html,";
 				$QKEY.= "hit,down,oneline,likes,dislikes,report,point,d_regis,d_modify,d_oneline,upload,ip,agent,sync,sns,adddata";
-				$QVAL = "'$c_uid','$site','$c_parent','$c_parentmbr','$c_display','$c_hidden','$c_notice','$c_name','$c_nic','$c_mbruid','$c_mbrid','$c_pw','$c_subject','$c_content','$c_html',";
+				$QVAL = "'$c_uid','$site','$c_parent','$c_parentmbr','$c_display','$c_hidden','$c_notice','$c_name','$c_nic','$c_mbruid','$c_id','$c_pw','$c_subject','$c_content','$c_html',";
 				$QVAL.= "'$c_hit','$c_down','$c_oneline','$c_score1','$c_score2','$c_singo','0','$c_d_regis','$c_d_modify','$c_d_oneline','','$c_ip','$c_agent','$c_sync','','$c_adddata'";
 
 				getDbInsert($table['s_comment'],$QKEY,$QVAL);
@@ -597,8 +597,8 @@ if ($migtype == 'post') {
 
 						$o_name		= getRssAddslashes($oneline_array[$k],'o_name');
 						$o_nic		= getRssAddslashes($oneline_array[$k],'o_nic');
-						$o_mbrid	= getRssAddslashes($oneline_array[$k],'o_mbrid');
-						$o_mbruid	= getMbrUid($o_mbrid);
+						$o_id	= getRssAddslashes($oneline_array[$k],'o_id');
+						$o_mbruid	= getMbrUid($o_id);
 						$o_content	= getRssAddslashes($oneline_array[$k],'o_content');
 						$o_html		= getRssAddslashes($oneline_array[$k],'o_html');
 						$o_singo	= getRssAddslashes($oneline_array[$k],'o_singo');
@@ -609,7 +609,7 @@ if ($migtype == 'post') {
 						$o_adddata	= '';
 
 						$QKEY = "uid,site,parent,parentmbr,hidden,name,nic,mbruid,id,content,html,report,point,d_regis,d_modify,ip,agent,adddata";
-						$QVAL = "'$o_uid','$site','$o_parent','$o_parentmbr','$o_hidden','$o_name','$o_nic','$o_mbruid','$o_mbrid','$o_content','$o_html','$o_singo','0','$o_d_regis','$o_d_modify','$o_ip','$o_agent','$o_adddata'";
+						$QVAL = "'$o_uid','$site','$o_parent','$o_parentmbr','$o_hidden','$o_name','$o_nic','$o_mbruid','$o_id','$o_content','$o_html','$o_singo','0','$o_d_regis','$o_d_modify','$o_ip','$o_agent','$o_adddata'";
 						getDbInsert($table['s_oneline'],$QKEY,$QVAL);
 
 						if ($o_uid == 1) db_query("OPTIMIZE TABLE ".$table['s_oneline'],$DB_CONNECT);
@@ -724,7 +724,7 @@ if ($viewresult) {
 		echo '<meta http-equiv="content-type" content="text/html;charset=utf-8" />';
 		echo '<script type="text/javascript">';
 		echo "alert('[".number_format($mCount)."]건의 회원데이터 이전작업이 완료되었습니다.');";
-		echo "window.open('".$g['s'].'/?r='.$r.'&m=admin&module=member'."');";
+		echo "parent.window.open('".$g['s'].'/?r='.$r.'&m=admin&module=member'."');";
 		echo "parent.location.href='".$g['s'].'/?r='.$r.'&m=admin&module='.$m."';";
 		echo '</script>';
 	}
