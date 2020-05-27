@@ -4,7 +4,7 @@ $step = $step ? $step : 'step1';
 $migset = array
 (
 	'member'=>'회원정보',
-	'board'=>'게시물/댓글',
+	'board'=>'게시물/댓글/첨부파일',
 	'point'=>'포인트',
 	'msg'=>'쪽지',
 	'post'=>'포스트',
@@ -13,9 +13,9 @@ $migset = array
 
 <div id="migbox" class="p-4">
 	<div class="notice">
-		킴스큐 rb1 또는 다른 프로그램의 데이터를 킴스큐 Rb2 데이터로 이전할 수 있습니다.<br>
+		킴스큐 Rb1 또는 다른 프로그램의 데이터를 킴스큐 Rb2 데이터로 이전할 수 있습니다.<br>
 		킴스큐-Rb2 용 마이그레이션 XML파일을 직접 등록하시거나 주소를 입력해 주세요..<br>
-		마이그레이션 후 기존 첨부파일 폴더는 /rb/files/ 폴더안에 업로드해주세요.<br>
+		마이그레이션 후 기존 첨부파일 폴더는 /files/ 폴더안에 업로드해주세요.<br>
 		(업로드한 모든 폴더와 파일들은 퍼미션을 일괄적으로 707로 변경해주세요.)
 	</div>
 
@@ -71,67 +71,68 @@ $migset = array
 			<?php endif?>
 		</div>
 
-		<table>
-
-			<?php if($migtype == 'board'):?>
-			<?php $BBSLIST = getDbArray($table['bbslist'],'uid','*','gid','asc',0,1)?>
-			<tr>
-				<td class="td1">이전대상 게시판</td>
-				<td class="td2">
-					<select name="bbs" class="form-control">
-						<option value="">&nbsp;+ 선택하세요</option>
-						<option value="">----------------------------------------------------------------</option>
-						<?php while($R=db_fetch_array($BBSLIST)):?>
-						<option value="<?php echo $R['uid']?>,<?php echo $R['id']?>">ㆍ<?php echo $R['name']?>(<?php echo $R['id']?> - <?php echo number_format($R['num_r'])?>개)</option>
-						<?php endwhile?>
-					</select>
-				</td>
-			</tr>
-			<?php endif?>
+		<?php if($migtype == 'board'):?>
+		<?php $BBSLIST = getDbArray($table['bbslist'],'uid','*','gid','asc',0,1)?>
+		<div class="form-group row">
+			<label class="col-2 col-form-label">이전대상 게시판</label>
+			<div class="col-5">
+				<select name="bbs" class="form-control custom-select">
+					<option value="">&nbsp;+ 선택하세요</option>
+					<option value="" disabled>----------------------------------------------------------------</option>
+					<?php while($R=db_fetch_array($BBSLIST)):?>
+					<option value="<?php echo $R['uid']?>,<?php echo $R['id']?>">ㆍ<?php echo $R['name']?>(<?php echo $R['id']?> - <?php echo number_format($R['num_r'])?>개)</option>
+					<?php endwhile?>
+				</select>
+			</div>
+		</div>
+		<?php endif?>
 
 
-			<?php if($migtype == 'post'):?>
-			<?php $POSTCAT = getDbArray($table['postcategory'],'site='.$s.' and depth=1','*','gid','asc',0,1)?>
-			<div class="form-group row">
-				<label class="col-2 col-form-label">이전 카테고리</label>
-				<div class="col-5">
-					<select name="postcat" class="form-control custom-select">
-						<option value="">ㆍ미지정</option>
-						<option value="" disabled>----------------------------------------------------------------</option>
-						<?php while($R=db_fetch_array($POSTCAT)):?>
-						<option value="<?php echo $R['uid']?>">ㆍ<?php echo $R['name']?>(<?php echo $R['id']?> - <?php echo number_format($R['num'])?>개)</option>
-						<?php endwhile?>
-					</select>
+		<?php if($migtype == 'post'):?>
+		<?php $POSTCAT = getDbArray($table['postcategory'],'site='.$s.' and depth=1','*','gid','asc',0,1)?>
+		<div class="form-group row">
+			<label class="col-2 col-form-label">이전 카테고리</label>
+			<div class="col-5">
+				<select name="postcat" class="form-control custom-select">
+					<option value="">ㆍ미지정</option>
+					<option value="" disabled>----------------------------------------------------------------</option>
+					<?php while($R=db_fetch_array($POSTCAT)):?>
+					<option value="<?php echo $R['uid']?>">ㆍ<?php echo $R['name']?>(<?php echo $R['id']?> - <?php echo number_format($R['num'])?>개)</option>
+					<?php endwhile?>
+				</select>
+			</div>
+		</div>
+		<?php endif?>
+
+
+		<div class="form-group row">
+			<label class="col-2 col-form-label">XML파일 등록</label>
+			<div class="col-5">
+				<div class="custom-file">
+				  <input type="file" name="xmlfile" class="custom-file-input" id="xmlfile">
+				  <label class="custom-file-label rounded-0" for="xmlfile" data-browse="찾아보기">선택된 파일없음</label>
 				</div>
 			</div>
-			<?php endif?>
+		</div>
 
+		<div class="row mt-5">
+			<div class="col-7">
+				<div class="d-flex justify-content-between align-items-center">
 
-			<div class="form-group row">
-				<label class="col-2 col-form-label">XML파일 등록</label>
-				<div class="col-5">
-					<div class="custom-file">
-					  <input type="file" name="xmlfile" class="custom-file-input" id="xmlfile">
-					  <label class="custom-file-label rounded-0" for="xmlfile" data-browse="찾아보기">선택된 파일없음</label>
+					<?php if($migtype=='member'||$migtype=='board'):?>
+					<div class="custom-control custom-checkbox">
+					  <input type="checkbox" class="custom-control-input" name="viewresult" value="1" id="viewresult">
+					  <label class="custom-control-label" for="viewresult">이전 후 결과보기</label>
 					</div>
+					<?php endif?>
+
+					<div class="">
+						<input type="button" class="btn btn-light" value=" 취소 " onclick="history.back();">
+						<input type="submit" class="btn btn-primary" value=" 이전하기 ">
+					</div>
+
 				</div>
 			</div>
-
-
-		</table>
-
-		<div class="submitbox form-inline">
-			<input type="button" class="btn btn-default" value=" 취소 " onclick="history.back();" />
-			<input type="submit" class="btn btn-primary" value=" 이전하기 " />
-
-			<?php if($migtype=='member'||$migtype=='board'):?>
-			<div class="checkbox" style="padding-left: 20px">
-		    <label>
-		      <input type="checkbox" name="viewresult" value="1"> 이전 후 결과보기
-		    </label>
-		  </div>
-			<?php endif?>
-
 		</div>
 
 	</form>
@@ -143,7 +144,7 @@ $migset = array
 </div>
 
 
-<script src="https://cdn.jsdelivr.net/npm/bs-custom-file-input/dist/bs-custom-file-input.min.js" charset="utf-8"></script>
+<script src="//cdn.jsdelivr.net/npm/bs-custom-file-input/dist/bs-custom-file-input.min.js" charset="utf-8"></script>
 
 <script type="text/javascript">
 

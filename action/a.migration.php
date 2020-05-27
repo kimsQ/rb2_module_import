@@ -718,9 +718,7 @@ if ($migtype == 'message')
 	}
 }
 
-
-if ($viewresult)
-{
+if ($viewresult) {
 	if ($migtype == 'member')
 	{
 		echo '<meta http-equiv="content-type" content="text/html;charset=utf-8" />';
@@ -735,7 +733,7 @@ if ($viewresult)
 		echo '<meta http-equiv="content-type" content="text/html;charset=utf-8" />';
 		echo '<script type="text/javascript">';
 		echo "alert('[".number_format($mCount)."]건의 게시물데이터 이전작업이 완료되었습니다.');";
-		echo "window.open('".$g['s'].'/?r='.$r.'&m=bbs&bid='.$bbsid."');";
+		echo "parent.window.open('".$g['s'].'/?r='.$r.'&m=bbs&bid='.$bbsid."');";
 		echo "parent.location.href='".$g['s'].'/?r='.$r.'&m=admin&module='.$m."';";
 		echo '</script>';
 	}
