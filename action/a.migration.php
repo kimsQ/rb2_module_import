@@ -65,10 +65,11 @@ if ($migtype == 'member') {
 		getDbInsert($table['s_mbrid'],'site,id,pw',"'$site','$id','$pw'");
 		$memberuid  = getDbCnt($table['s_mbrid'],'max(uid)','');
 		$auth		= getRssAddslashes($RSS['array'][$i],'auth');;
-		$mygroup		= 1;
+		$mygroup		= getRssAddslashes($RSS['array'][$i],'sosok');;
 		$level		= getRssAddslashes($RSS['array'][$i],'level');
 		$comp		= 0;
-		$admin		= 0;
+
+		$admin		= getRssAddslashes($RSS['array'][$i],'admin');
 		$adm_view	= getRssAddslashes($RSS['array'][$i],'adm_view');
 		$email		= getRssAddslashes($RSS['array'][$i],'email');
 		$name		= getRssAddslashes($RSS['array'][$i],'name');
@@ -81,7 +82,7 @@ if ($migtype == 'member') {
 		$birth2		= getRssAddslashes($RSS['array'][$i],'birth2');
 		$birthtype	= 0;
 		$tel		= getRssAddslashes($RSS['array'][$i],'tel1');
-		$phone		= getRssAddslashes($RSS['array'][$i],'tel2');
+		$phone	= str_replace('-','',getRssAddslashes($RSS['array'][$i],'tel2'));
 		// $zip		= getRssAddslashes($RSS['array'][$i],'zip');
 		// $addr0		= getRssAddslashes($RSS['array'][$i],'addr0');
 		// $addr1		= getRssAddslashes($RSS['array'][$i],'addr1');
@@ -106,17 +107,29 @@ if ($migtype == 'member') {
 		$sns		= getRssAddslashes($RSS['array'][$i],'sns');
 		$tmpcode	= '';
 
-		$_QKEY = "memberuid,site,auth,mygroup,level,comp,admin,adm_view,";
+		$_QKEY = "memberuid,site,auth,mygroup,level,comp,super,admin,adm_view,";
 		$_QKEY.= "email,name,nic,grade,photo,home,sex,birth1,birth2,birthtype,tel,phone,";
 		$_QKEY.= "job,marr1,marr2,sms,mailing,smail,point,usepoint,money,cash,num_login,";
 		$_QKEY.= "now_log,last_log,last_pw,is_paper,d_regis,tmpcode,sns,addfield";
-		$_QVAL = "'$memberuid','$site','$auth','$mygroup','$level','$comp','$admin','$adm_view',";
+		$_QVAL = "'$memberuid','$site','$auth','$mygroup','$level','$comp','$admin','$admin','$adm_view',";
 		$_QVAL.= "'$email','$name','$nic','$grade','$photo','$home','$sex','$birth1','$birth2','$birthtype','$tel','$phone',";
 		$_QVAL.= "'$job','$marr1','$marr2','$sms','$mailing','$smail','$point','$usepoint','$money','$cash','$num_login',";
 		$_QVAL.= "'$now_log','$last_log','$last_pw','$is_paper','$d_regis','$tmpcode','$sns','$addfield'";
 		getDbInsert($table['s_mbrdata'],$_QKEY,$_QVAL);
 		getDbUpdate($table['s_mbrlevel'],'num=num+1','uid='.$level);
 		getDbUpdate($table['s_mbrgroup'],'num=num+1','uid='.$mygroup);
+
+		$d_verified = '';
+		$isEmail	= getDbData($table['s_mbremail'],"email='".$email."'",'uid');
+		$isPhone	= getDbData($table['s_mbrphone'],"phone='".$phone."'",'uid');
+
+		if ($email && !$isEmail){
+			getDbInsert($table['s_mbremail'],'mbruid,email,base,backup,d_regis,d_code,d_verified',"'".$memberuid."','".$email."',1,0,'".$d_regis."','','".$d_verified."'");
+		}
+
+		if ($phone && !$isPhone) {
+			getDbInsert($table['s_mbrphone'],'mbruid,phone,base,backup,d_regis,d_code,d_verified',"'".$memberuid."','".$phone."',1,0,'".$d_regis."','','".$d_verified."'");
+		}
 
 		if ($comp) {
 			$comp_num	= getRssAddslashes($RSS['array'][$i],'comp_num');
