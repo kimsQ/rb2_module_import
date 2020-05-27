@@ -56,80 +56,69 @@ if ($migtype == 'member') {
 
 	for($i = 1; $i < $RSS['count']; $i++)
 	{
-		$uid = getRssAddslashes($RSS['array'][$i],'uid');
 		$id			= getRssAddslashes($RSS['array'][$i],'id');
 		$pw			= getRssAddslashes($RSS['array'][$i],'pw');
-		$salt		= getRssAddslashes($RSS['array'][$i],'d_regis');
 
 		$isMember	= getDbData($table['s_mbrid'],"id='".$id."'",'*');
 		if ($isMember['uid']) continue;
 
-		// getDbInsert($table['s_mbrid'],'site,id,pw',"'$site','$id','$pw'");
-		getDbInsert($table['s_mbrid'],'uid,site,id,pw',"'$uid','$site','$id','".getCrypt($pw,$salt)."'");
-
-		// $memberuid  = getDbCnt($table['s_mbrid'],'max(uid)','');
-
-		$memberuid = getRssAddslashes($RSS['array'][$i],'uid');
-		$auth		= 1;
+		getDbInsert($table['s_mbrid'],'site,id,pw',"'$site','$id','$pw'");
+		$memberuid  = getDbCnt($table['s_mbrid'],'max(uid)','');
+		$auth		= getRssAddslashes($RSS['array'][$i],'auth');;
 		$mygroup		= 1;
 		$level		= getRssAddslashes($RSS['array'][$i],'level');
 		$comp		= 0;
 		$admin		= 0;
-		$adm_view	= '';
+		$adm_view	= getRssAddslashes($RSS['array'][$i],'adm_view');
 		$email		= getRssAddslashes($RSS['array'][$i],'email');
 		$name		= getRssAddslashes($RSS['array'][$i],'name');
-		$nic		= getRssAddslashes($RSS['array'][$i],'name');
+		$nic		= getRssAddslashes($RSS['array'][$i],'nic');
 		$grade		= '';
 		$photo		= '';
-		$home		= '';
-		$sex		= '';
+		$home		= getRssAddslashes($RSS['array'][$i],'home');
+		$sex		= getRssAddslashes($RSS['array'][$i],'sex');
 		$birth1		= getRssAddslashes($RSS['array'][$i],'birth1');
 		$birth2		= getRssAddslashes($RSS['array'][$i],'birth2');
 		$birthtype	= 0;
-		$tel1		= getRssAddslashes($RSS['array'][$i],'tel1');
-		$tel2		= getRssAddslashes($RSS['array'][$i],'tel2');
-		$zip		= getRssAddslashes($RSS['array'][$i],'zip');
-		$addr0		= getRssAddslashes($RSS['array'][$i],'addr0');
-		$addr1		= getRssAddslashes($RSS['array'][$i],'addr1');
-		$addr2		= '';
-		$job		= '';
-		$marr1		= '';
-		$marr2		= '';
-		$sms		= 0;
-		$mailing	= 0;
-		$smail		= 0;
-		$point		= 0;
-		$usepoint	= 0;
-		$money		= 0;
-		$cash		= 0;
-		$num_login	= 0;
-		$pw_q		= '';
-		$pw_a		= '';
+		$tel		= getRssAddslashes($RSS['array'][$i],'tel1');
+		$phone		= getRssAddslashes($RSS['array'][$i],'tel2');
+		// $zip		= getRssAddslashes($RSS['array'][$i],'zip');
+		// $addr0		= getRssAddslashes($RSS['array'][$i],'addr0');
+		// $addr1		= getRssAddslashes($RSS['array'][$i],'addr1');
+		// $addr2		= getRssAddslashes($RSS['array'][$i],'addr2');
+		$job		= getRssAddslashes($RSS['array'][$i],'job');
+		$marr1		= getRssAddslashes($RSS['array'][$i],'marr1');
+		$marr2		= getRssAddslashes($RSS['array'][$i],'marr2');
+		$sms		= getRssAddslashes($RSS['array'][$i],'sms');
+		$mailing	= getRssAddslashes($RSS['array'][$i],'mailing');
+		$smail		= getRssAddslashes($RSS['array'][$i],'smail');
+		$point		= getRssAddslashes($RSS['array'][$i],'point');
+		$usepoint	= getRssAddslashes($RSS['array'][$i],'usepoint');
+		$money		= getRssAddslashes($RSS['array'][$i],'money');
+		$cash		= getRssAddslashes($RSS['array'][$i],'cash');
+		$num_login	= getRssAddslashes($RSS['array'][$i],'num_login');
 		$now_log	= 0;
-		$last_log	= '';
-		$last_pw	= '';
+		$last_log	= getRssAddslashes($RSS['array'][$i],'last_log');
+		$last_pw	= getRssAddslashes($RSS['array'][$i],'last_pw');
 		$is_paper	= 0;
 		$d_regis	= getRssAddslashes($RSS['array'][$i],'d_regis');
-		$addfield	= '';
-		$sns		= '';
+		$addfield	= getRssAddslashes($RSS['array'][$i],'addfield');
+		$sns		= getRssAddslashes($RSS['array'][$i],'sns');
 		$tmpcode	= '';
-		$join_type	= 'kimsq';
-
 
 		$_QKEY = "memberuid,site,auth,mygroup,level,comp,admin,adm_view,";
-		$_QKEY.= "email,name,nic,grade,photo,home,sex,birth1,birth2,birthtype,tel1,tel2,zip,";
-		$_QKEY.= "addr0,addr1,addr2,job,marr1,marr2,sms,mailing,smail,point,usepoint,money,cash,num_login,";
-		$_QKEY.= "pw_q,pw_a,now_log,last_log,last_pw,is_paper,d_regis,tmpcode,sns,addfield,join_type";
+		$_QKEY.= "email,name,nic,grade,photo,home,sex,birth1,birth2,birthtype,tel,phone,";
+		$_QKEY.= "job,marr1,marr2,sms,mailing,smail,point,usepoint,money,cash,num_login,";
+		$_QKEY.= "now_log,last_log,last_pw,is_paper,d_regis,tmpcode,sns,addfield";
 		$_QVAL = "'$memberuid','$site','$auth','$mygroup','$level','$comp','$admin','$adm_view',";
-		$_QVAL.= "'$email','$name','$nic','$grade','$photo','$home','$sex','$birth1','$birth2','$birthtype','$tel1','$tel2','$zip',";
-		$_QVAL.= "'$addr0','$addr1','$addr2','$job','$marr1','$marr2','$sms','$mailing','$smail','$point','$usepoint','$money','$cash','$num_login',";
-		$_QVAL.= "'$pw_q','$pw_a','$now_log','$last_log','$last_pw','$is_paper','$d_regis','$tmpcode','$sns','$addfield','$join_type'";
+		$_QVAL.= "'$email','$name','$nic','$grade','$photo','$home','$sex','$birth1','$birth2','$birthtype','$tel','$phone',";
+		$_QVAL.= "'$job','$marr1','$marr2','$sms','$mailing','$smail','$point','$usepoint','$money','$cash','$num_login',";
+		$_QVAL.= "'$now_log','$last_log','$last_pw','$is_paper','$d_regis','$tmpcode','$sns','$addfield'";
 		getDbInsert($table['s_mbrdata'],$_QKEY,$_QVAL);
 		getDbUpdate($table['s_mbrlevel'],'num=num+1','uid='.$level);
 		getDbUpdate($table['s_mbrgroup'],'num=num+1','uid='.$mygroup);
 
-		if ($comp)
-		{
+		if ($comp) {
 			$comp_num	= getRssAddslashes($RSS['array'][$i],'comp_num');
 			$comp_type	= getRssAddslashes($RSS['array'][$i],'comp_type');
 			$comp_name	= getRssAddslashes($RSS['array'][$i],'comp_name');
@@ -647,6 +636,7 @@ if ($migtype == 'point')
 		$mCount++;
 	}
 }
+
 //적립금
 if ($migtype == 'cash')
 {
@@ -669,6 +659,7 @@ if ($migtype == 'cash')
 		$mCount++;
 	}
 }
+
 //예치금
 if ($migtype == 'money')
 {
@@ -691,8 +682,9 @@ if ($migtype == 'money')
 		$mCount++;
 	}
 }
+
 //쪽지
-if ($migtype == 'message')
+if ($migtype == 'msg')
 {
 	if (getRssAddslashes($RSS['data'],'title') != 'KIMSQ_RB_MESSAGE')
 	{
