@@ -4,11 +4,11 @@ if(!defined('__KIMS__')) exit;
 checkAdmin(0);
 
 include_once $g['path_core'].'function/rss.func.php';
-function getMbrUid($mbr_no)
+function getMbrUid($id)
 {
 	global $table,$DB_CONNECT;
-	$R = getDbData($table['s_mbrdata'],'mbrno='.$mbr_no,'*');
-	if($R['memberuid']) return $R['memberuid'];
+	$R = getDbData($table['s_mbrid'],'id="'.$id.'"','*');
+	if($R['uid']) return $R['uid'];
 	else return 0;
 }
 function getRssAddslashes($s,$f)
@@ -183,8 +183,8 @@ if ($migtype == 'board') {
 		$notice		= getRssAddslashes($RSS['array'][$i],'notice');
 		$name		= getRssAddslashes($RSS['array'][$i],'name');
 		$nic		= getRssAddslashes($RSS['array'][$i],'nic');
-		$mbrid		= getRssAddslashes($RSS['array'][$i],'mbrid');
-		$mbruid		= getMbrUid($mbrid);
+		$id		= getRssAddslashes($RSS['array'][$i],'id');
+		$mbruid		= getMbrUid($id);
 		$pw			= getRssAddslashes($RSS['array'][$i],'pw');
 		$category	= getRssAddslashes($RSS['array'][$i],'category');
 		$subject	= getRssAddslashes($RSS['array'][$i],'subject');
@@ -214,11 +214,11 @@ if ($migtype == 'board') {
 		$month		= substr($today,0,6);
 
 		$xupload = '';
-		$up_cync = '';
+		$up_sync = '';
 
 		if ($upload) {
 			$up_fserver = 0;
-			$up_url = $g['url_root'].'/files/';
+			$up_url = '';
 			$up_caption	= $subject;
 			$upfiles = explode('|',$upload);
 
@@ -228,21 +228,20 @@ if ($migtype == 'board') {
 				$valexp		= explode(',',$val);
 				$up_name	= $valexp[0];
 				$up_tmpname	= $valexp[1];
-				$up_thumbname = $valexp[2];
-				$up_size	= $valexp[3];
-				$up_width	= $valexp[7];
-				$up_height	= $valexp[8];
-				$up_down	= $valexp[4];
-				$up_date	= $valexp[5];
-				$up_folder	= $valexp[6];
+				$up_size	= $valexp[2];
+				$up_width	= $valexp[3];
+				$up_height	= $valexp[4];
+				$up_down	= $valexp[5];
+				$up_date	= $valexp[6];
+				$up_folder	= 'files/'.$valexp[7];
 				$up_fileExt	= strtolower(getExt($up_name));
 				$up_fileExt	= $up_fileExt == 'jpeg' ? 'jpg' : $up_fileExt;
 				$up_type	= getFileType($up_fileExt);
 				$up_mingid	= getDbCnt($table['s_upload'],'min(gid)','');
 				$up_gid = $up_mingid ? $up_mingid - 1 : 100000000;
 
-				$QKEY = "gid,hidden,tmpcode,site,mbruid,type,ext,fserver,url,folder,name,tmpname,thumbname,size,width,height,caption,down,d_regis,d_update,cync";
-				$QVAL = "'$up_gid','0','','$site','$mbruid','$up_type','$up_fileExt','$up_fserver','$up_url','$up_folder','$up_name','$up_tmpname','$up_thumbname','$up_size','$up_width','$up_height','$up_caption','$up_down','$d_regis','','$up_cync'";
+				$QKEY = "gid,hidden,tmpcode,site,mbruid,type,ext,fserver,host,folder,name,tmpname,size,width,height,caption,down,d_regis,d_update,sync";
+				$QVAL = "'$up_gid','0','','$site','$mbruid','$up_type','$up_fileExt','$up_fserver','$up_url','$up_folder','$up_name','$up_tmpname','$up_size','$up_width','$up_height','$up_caption','$up_down','$d_regis','','$up_sync'";
 				getDbInsert($table['s_upload'],$QKEY,$QVAL);
 				$up_lastuid = getDbCnt($table['s_upload'],'max(uid)','');
 				$xupload .= '['.$up_lastuid.']';
@@ -252,9 +251,9 @@ if ($migtype == 'board') {
 		}
 
 		$QKEY = "site,gid,bbs,bbsid,depth,parentmbr,display,hidden,notice,name,nic,mbruid,id,pw,category,subject,content,html,tag,";
-		$QKEY.= "hit,down,comment,oneline,trackback,likes,dislikes,report,point1,point2,point3,point4,d_regis,d_modify,d_comment,d_trackback,upload,ip,agent,sns,adddata";
-		$QVAL = "'$site','$gid','$bbsuid','$bbsid','$depth','$parentmbr','$display','$hidden','$notice','$name','$nic','$mbruid','$mbrid','$pw','$category','$subject','$content','$html','$tag',";
-		$QVAL.= "'$hit','$down','$comment','$oneline','$trackback','$score1','$score2','$singo','0','0','0','0','$d_regis','$d_modify','$d_comment','$d_trackback','$xupload','$ip','$agent','','$adddata'";
+		$QKEY.= "hit,down,comment,oneline,likes,dislikes,report,point1,point2,point3,point4,d_regis,d_modify,d_comment,upload,ip,agent,sns,adddata";
+		$QVAL = "'$site','$gid','$bbsuid','$bbsid','$depth','$parentmbr','$display','$hidden','$notice','$name','$nic','$mbruid','$id','$pw','$category','$subject','$content','$html','$tag',";
+		$QVAL.= "'$hit','$down','$comment','$oneline','$score1','$score2','$singo','0','0','0','0','$d_regis','$d_modify','$d_comment','$xupload','$ip','$agent','','$adddata'";
 		getDbInsert($table[$bbsmodule.'data'],$QKEY,$QVAL);
 		$LASTUID = getDbCnt($table[$bbsmodule.'data'],'max(uid)','');
 
@@ -305,8 +304,8 @@ if ($migtype == 'board') {
 				$c_notice	= getRssAddslashes($comment_array[$j],'c_notice');
 				$c_name		= getRssAddslashes($comment_array[$j],'c_name');
 				$c_nic		= getRssAddslashes($comment_array[$j],'c_nic');
-				$c_mbrid	= getRssAddslashes($comment_array[$j],'c_mbrid');
-				$c_mbruid	= getMbrUid($c_mbrid);
+				$c_id	= getRssAddslashes($comment_array[$j],'c_id');
+				$c_mbruid	= getMbrUid($c_id);
 				$c_pw		= getRssAddslashes($comment_array[$j],'c_pw');
 				$c_subject	= getRssAddslashes($comment_array[$j],'c_subject');
 				$c_content	= getRssAddslashes($comment_array[$j],'c_content');
@@ -328,7 +327,7 @@ if ($migtype == 'board') {
 				$onelinedata= getRssAddslashes($comment_array[$j],'onelinedata');
 
 				$xupload = '';
-				$up_cync = '';
+				$up_sync = '';
 				if ($c_upload)
 				{
 					$up_fserver = 0;
@@ -342,7 +341,6 @@ if ($migtype == 'board') {
 						$valexp		= explode(',',$val);
 						$up_name	= $valexp[0];
 						$up_tmpname	= $valexp[1];
-						$up_thumbname = $valexp[2];
 						$up_size	= $valexp[3];
 						$up_width	= $valexp[7];
 						$up_height	= $valexp[8];
@@ -355,8 +353,8 @@ if ($migtype == 'board') {
 						$up_mingid	= getDbCnt($table['s_upload'],'min(gid)','');
 						$up_gid = $up_mingid ? $up_mingid - 1 : 100000000;
 
-						$QKEY = "gid,hidden,tmpcode,site,mbruid,type,ext,fserver,url,folder,name,tmpname,thumbname,size,width,height,caption,down,d_regis,d_update,cync";
-						$QVAL = "'$up_gid','0','','$site','$mbruid','$up_type','$up_fileExt','$up_fserver','$up_url','$up_folder','$up_name','$up_tmpname','$up_thumbname','$up_size','$up_width','$up_height','$up_caption','$up_down','$d_regis','','$up_cync'";
+						$QKEY = "gid,hidden,tmpcode,site,mbruid,type,ext,fserver,host,folder,name,tmpname,size,width,height,caption,down,d_regis,d_update,sync";
+						$QVAL = "'$up_gid','0','','$site','$c_mbruid','$up_type','$up_fileExt','$up_fserver','$up_url','$up_folder','$up_name','$up_tmpname','$up_size','$up_width','$up_height','$up_caption','$up_down','$d_regis','','$up_sync'";
 						getDbInsert($table['s_upload'],$QKEY,$QVAL);
 						$up_lastuid = getDbCnt($table['s_upload'],'max(uid)','');
 						$xupload .= '['.$up_lastuid.']';
@@ -367,7 +365,7 @@ if ($migtype == 'board') {
 
 				$QKEY = "uid,site,parent,parentmbr,display,hidden,notice,name,nic,mbruid,id,pw,subject,content,html,";
 				$QKEY.= "hit,down,oneline,likes,dislikes,report,point,d_regis,d_modify,d_oneline,upload,ip,agent,sync,sns,adddata";
-				$QVAL = "'$c_uid','$site','$c_parent','$c_parentmbr','$c_display','$c_hidden','$c_notice','$c_name','$c_nic','$c_mbruid','$c_mbrid','$c_pw','$c_subject','$c_content','$c_html',";
+				$QVAL = "'$c_uid','$site','$c_parent','$c_parentmbr','$c_display','$c_hidden','$c_notice','$c_name','$c_nic','$c_mbruid','$c_id','$c_pw','$c_subject','$c_content','$c_html',";
 				$QVAL.= "'$c_hit','$c_down','$c_oneline','$c_score1','$c_score2','$c_singo','0','$c_d_regis','$c_d_modify','$c_d_oneline','$xupload','$c_ip','$c_agent','$c_sync','','$c_adddata'";
 				getDbInsert($table['s_comment'],$QKEY,$QVAL);
 
@@ -390,8 +388,8 @@ if ($migtype == 'board') {
 
 						$o_name		= getRssAddslashes($oneline_array[$k],'o_name');
 						$o_nic		= getRssAddslashes($oneline_array[$k],'o_nic');
-						$o_mbrid	= getRssAddslashes($oneline_array[$k],'o_mbrid');
-						$o_mbruid	= getMbrUid($o_mbrid);
+						$o_id	= getRssAddslashes($oneline_array[$k],'o_id');
+						$o_mbruid	= getMbrUid($o_id);
 						$o_content	= getRssAddslashes($oneline_array[$k],'o_content');
 						$o_html		= getRssAddslashes($oneline_array[$k],'o_html');
 						$o_singo	= getRssAddslashes($oneline_array[$k],'o_singo');
@@ -402,7 +400,7 @@ if ($migtype == 'board') {
 						$o_adddata	= '';
 
 						$QKEY = "uid,site,parent,parentmbr,hidden,name,nic,mbruid,id,content,html,report,point,d_regis,d_modify,ip,agent,adddata";
-						$QVAL = "'$o_uid','$site','$o_parent','$o_parentmbr','$o_hidden','$o_name','$o_nic','$o_mbruid','$o_mbrid','$o_content','$o_html','$o_singo','0','$o_d_regis','$o_d_modify','$o_ip','$o_agent','$o_adddata'";
+						$QVAL = "'$o_uid','$site','$o_parent','$o_parentmbr','$o_hidden','$o_name','$o_nic','$o_mbruid','$o_id','$o_content','$o_html','$o_singo','0','$o_d_regis','$o_d_modify','$o_ip','$o_agent','$o_adddata'";
 						getDbInsert($table['s_oneline'],$QKEY,$QVAL);
 
 						if ($o_uid == 1) db_query("OPTIMIZE TABLE ".$table['s_oneline'],$DB_CONNECT);
