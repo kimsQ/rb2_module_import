@@ -68,7 +68,6 @@ if ($migtype == 'member') {
 		$mygroup		= getRssAddslashes($RSS['array'][$i],'sosok');;
 		$level		= getRssAddslashes($RSS['array'][$i],'level');
 		$comp		= 0;
-
 		$admin		= getRssAddslashes($RSS['array'][$i],'admin');
 		$adm_view	= getRssAddslashes($RSS['array'][$i],'adm_view');
 		$email		= getRssAddslashes($RSS['array'][$i],'email');
@@ -83,10 +82,10 @@ if ($migtype == 'member') {
 		$birthtype	= 0;
 		$tel		= getRssAddslashes($RSS['array'][$i],'tel1');
 		$phone	= str_replace('-','',getRssAddslashes($RSS['array'][$i],'tel2'));
-		// $zip		= getRssAddslashes($RSS['array'][$i],'zip');
-		// $addr0		= getRssAddslashes($RSS['array'][$i],'addr0');
-		// $addr1		= getRssAddslashes($RSS['array'][$i],'addr1');
-		// $addr2		= getRssAddslashes($RSS['array'][$i],'addr2');
+		$zip		= getRssAddslashes($RSS['array'][$i],'zip');
+		$addr0		= getRssAddslashes($RSS['array'][$i],'addr0');
+		$addr1		= getRssAddslashes($RSS['array'][$i],'addr1');
+		$addr2		= getRssAddslashes($RSS['array'][$i],'addr2');
 		$job		= getRssAddslashes($RSS['array'][$i],'job');
 		$marr1		= getRssAddslashes($RSS['array'][$i],'marr1');
 		$marr2		= getRssAddslashes($RSS['array'][$i],'marr2');
@@ -105,6 +104,7 @@ if ($migtype == 'member') {
 		$d_regis	= getRssAddslashes($RSS['array'][$i],'d_regis');
 		$addfield	= getRssAddslashes($RSS['array'][$i],'addfield');
 		$sns		= getRssAddslashes($RSS['array'][$i],'sns');
+		$addfield		= getRssAddslashes($RSS['array'][$i],'addfield');
 		$tmpcode	= '';
 
 		$_QKEY = "memberuid,site,auth,mygroup,level,comp,super,admin,adm_view,";
@@ -454,7 +454,7 @@ if ($migtype == 'post') {
 		$adddata		= getRssAddslashes($RSS['array'][$i],'adddata');
 		$html = 'HTML';
 		if ($postcat) $category = '['.$postcat.']';
-		$member = '['.$mbruid.']';
+		$members = '['.$mbruid.']';
 	  $format = 1;
 	  $dis_rating = 1;
 
@@ -498,8 +498,15 @@ if ($migtype == 'post') {
 			}
 		}
 
-	  $_QKEY = "site,gid,cid,mbruid,subject,review,content,tag,display,hidden,html,category,member,hit,likes,dislikes,comment,oneline,dis_rating,d_regis,d_modify,format,upload,ip,agent,adddata";
-	  $_QVAL = "'$site','$gid','$cid','$mbruid','$subject','$review','$content','$tag','$display','$hidden','$html','$category','$member','$hit','$likes','$dislikes','$comment','$oneline','$dis_rating','$d_regis','$d_modify','$format','$xupload','$ip','$agent','$adddata'";
+		// member -> members 필드명 변경
+		$_tmp1 = db_query("SHOW COLUMNS FROM ".$table[$postmodule.'data']." WHERE `Field` = 'members'",$DB_CONNECT);
+		if(!db_num_rows($_tmp1)) {
+			$_tmp1 = ("alter table ".$table[$postmodule.'data']." CHANGE member members TEXT not null");
+			db_query($_tmp1, $DB_CONNECT);
+		}
+
+	  $_QKEY = "site,gid,cid,mbruid,subject,review,content,tag,display,hidden,html,category,members,hit,likes,dislikes,comment,oneline,dis_rating,d_regis,d_modify,format,upload,ip,agent,adddata";
+	  $_QVAL = "'$site','$gid','$cid','$mbruid','$subject','$review','$content','$tag','$display','$hidden','$html','$category','$members','$hit','$likes','$dislikes','$comment','$oneline','$dis_rating','$d_regis','$d_modify','$format','$xupload','$ip','$agent','$adddata'";
 	  getDbInsert($table[$postmodule.'data'],$_QKEY,$_QVAL);
 		getDbInsert($table[$postmodule.'index'],'site,display,format,gid',"'$site','$display','$format','$gid'");
 
