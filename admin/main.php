@@ -108,10 +108,32 @@ $migset = array
 		<div class="form-group row">
 			<label class="col-2 col-form-label">XML파일 등록</label>
 			<div class="col-5">
-				<div class="custom-file">
-				  <input type="file" name="xmlfile" class="custom-file-input" id="xmlfile">
-				  <label class="custom-file-label rounded-0" for="xmlfile" data-browse="찾아보기">선택된 파일없음</label>
+
+				<ul class="nav nav-pills p-0 mb-2" role="tablist">
+				  <li class="nav-item" role="presentation">
+				    <a class="nav-link active" data-toggle="tab" href="#xml-attach" role="tab" aria-controls="home" aria-selected="true">첨부</a>
+				  </li>
+				  <li class="nav-item" role="presentation">
+				    <a class="nav-link" data-toggle="tab" href="#xml-path" role="tab" aria-controls="profile" aria-selected="false">경로입력</a>
+				  </li>
+				</ul>
+
+				<div class="tab-content">
+
+					<div class="tab-pane show active" id="xml-attach" role="tabpanel">
+						<div class="custom-file">
+						  <input type="file" name="xmlfile" class="custom-file-input" id="xmlfile">
+						  <label class="custom-file-label rounded-0" for="xmlfile" data-browse="찾아보기">선택된 파일없음</label>
+						</div>
+					</div>
+					<div class="tab-pane" id="xml-path" role="tabpanel">
+						<div class="form-group">
+							<input type="text" class="form-control" name="xmlpath" placeholder="경로입력">
+							<small class="form-text text-muted">XML 파일용량이 큰 경우 FTP로 업로드 후 경로를 지정해주세요. 예) <code>/파일명.xml</code></small>
+						</div>
+					</div>
 				</div>
+
 			</div>
 		</div>
 
@@ -169,12 +191,14 @@ function saveCheck(f) {
 		}
 	}
 
-
 	if (f.xmlfile.value=='')
 	{
-		alert('XML파일을 직접 등록해 주세요.     ');
-		f.xmlfile.focus();
-		return false;
+		if (f.xmlpath.value == '')
+		{
+			alert('XML파일을 직접 등록하거나 파일의 URL을 입력해 주세요.     ');
+			f.xmlpath.focus();
+			return false;
+		}
 	}
 	else {
 		var extarr = f.xmlfile.value.split('.');

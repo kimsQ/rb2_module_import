@@ -33,7 +33,7 @@ else
 {
 	if (!trim($xmlpath))
 	{
-		// getLink('reload','parent.','XML파일경로가 지정되지 않았습니다.','');
+		getLink('reload','parent.','XML파일경로가 지정되지 않았습니다.','');
 	}
 	$RSS['data'] = getUrlData(trim($xmlpath),1);
 	if (!$RSS['data'])
